@@ -30,3 +30,50 @@ const dependencies = paramTypes.map(Type => new Type()); // 递归实例化 Data
 const userService = new UserService(...dependencies); // 最终构造目标类
 
 ```
+
+通过装饰器自动化上面的过程
+```js
+@provide()
+export class UserService {
+  @inject()
+  userModel;
+
+  async getUser(userId) {
+    return await this.userModel.get(userId);
+  }
+}
+```
+
+
+耦合是什么？ 这就是耦合
+```js
+// 常见的依赖
+import { A } from './A';
+import { B } from './B';
+
+class C {
+  constructor() {
+    this.a = new A();
+    this.b = new B(this.a);
+  }
+}
+```
+
+怎么解耦 ？通过容器自动实现实例化
+
+```js
+// 使用 IoC
+import { Container } from 'injection';
+import { A } from './A';
+import { B } from './B';
+const container = new Container();
+container.bind(A);
+container.bind(B);
+
+class C {
+  constructor() {
+    this.a = container.get('a');
+    this.b = container.get('b');
+  }
+}
+```
